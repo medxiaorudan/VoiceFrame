@@ -1,4 +1,4 @@
-# VoiceFrame
+# 🎙️ VoiceFrame
 
 **Your video. Your voice. Right on cue.**
 
@@ -6,7 +6,7 @@
 
 A local video dubbing studio. Upload a video, choose a voice, adjust the timing, and export—all in your browser.
 
-### One World, Many Voices
+### 🌍 One World, Many Voices
 
 ![Animated film preview](docs/assets/preview.gif)
 
@@ -19,9 +19,9 @@ https://github.com/user-attachments/assets/b641585d-c9bc-498d-a3b6-3b5df0efc027
 
 ---
 
-[**Get started**](docs/SETUP.md) · [**User guide**](docs/USER_GUIDE.md)
+[**🚀 Get started**](docs/SETUP.md) · [**📖 User guide**](docs/USER_GUIDE.md)
 
-Apple Silicon Mac · Windows · Linux
+💻 Apple Silicon Mac · Windows · Linux
 
 ---
 
