@@ -11,7 +11,7 @@ A local video dubbing studio. Upload a video, choose a voice, adjust the timing,
 ![Animated film preview](docs/assets/preview.gif)
 
 <details>
-<summary>▶ Play the full film with sound · 1:20</summary>
+<summary>▶️ 🔊 Play the full film with sound · 1:20</summary>
 
 https://github.com/user-attachments/assets/b641585d-c9bc-498d-a3b6-3b5df0efc027
 
