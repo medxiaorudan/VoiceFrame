@@ -1,4 +1,4 @@
-<div align="center">
+
 
 # VoiceFrame
 
@@ -10,9 +10,8 @@ A local video dubbing studio. Upload a video, choose a voice, adjust the timing,
 
 ### One World, Many Voices
 
-[![Watch One World, Many Voices](docs/assets/preview.gif)](https://github.com/medxiaorudan/VoiceFrame/raw/refs/heads/main/docs/assets/showcase.mp4)
+https://github.com/user-attachments/assets/bd319cb4-68e3-4b45-a48a-06bec8856cfe
 
-**[↓ Download the full film · 1:20]**
 
 
 
@@ -22,7 +21,7 @@ A local video dubbing studio. Upload a video, choose a voice, adjust the timing,
 
 Apple Silicon Mac · Windows · Linux
 
-</div>
+
 
 ---
 
