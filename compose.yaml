@@ -1,0 +1,17 @@
+services:
+  voiceframe:
+    build:
+      context: .
+      args:
+        INSTALL_TORCH: "1"
+    ports:
+      - "127.0.0.1:8765:8765"
+    environment:
+      VOICEFRAME_ALLOWED_HOSTS: localhost,127.0.0.1
+    volumes:
+      - voiceframe_data:/data
+      - voiceframe_models:/models
+    restart: unless-stopped
+volumes:
+  voiceframe_data:
+  voiceframe_models:

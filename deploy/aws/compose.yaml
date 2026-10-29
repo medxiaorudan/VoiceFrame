@@ -1,0 +1,37 @@
+services:
+  voiceframe:
+    build:
+      context: ../..
+      args:
+        INSTALL_TORCH: "1"
+    environment:
+      VOICEFRAME_PUBLIC: "1"
+      VOICEFRAME_ACCESS_KEY: ${VOICEFRAME_ACCESS_KEY:?Set a random 32+ character key}
+      VOICEFRAME_ALLOWED_HOSTS: ${DOMAIN:?Set your DNS hostname},127.0.0.1
+    volumes:
+      - studio_data:/data
+      - studio_models:/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+  proxy:
+    image: caddy:2
+    environment:
+      DOMAIN: ${DOMAIN:?Set your DNS hostname}
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [voiceframe]
+    restart: unless-stopped
+volumes:
+  studio_data:
+  studio_models:
+  caddy_data:
+  caddy_config:

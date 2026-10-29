@@ -1,0 +1,7 @@
+{
+  "name": "voiceframe",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Optional managed preview entry; normal startup does not require Node.js.",
+  "scripts": {"dev": "PYTHONPATH=. .venv/bin/python scripts/preview.py", "check": "node --check app/static/app.js"}
+}

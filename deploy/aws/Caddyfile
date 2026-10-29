@@ -1,0 +1,7 @@
+{$DOMAIN} {
+    encode zstd gzip
+    request_body {
+        max_size 1050MB
+    }
+    reverse_proxy voiceframe:8765
+}
