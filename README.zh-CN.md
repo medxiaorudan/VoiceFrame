@@ -1,4 +1,4 @@
-<div align="center">
+
 
 # VoiceFrame
 
@@ -10,9 +10,8 @@
 
 ### 一个世界，多种声音
 
-[![观看：一个世界，多种声音](docs/assets/preview.gif)](https://github.com/medxiaorudan/VoiceFrame/raw/refs/heads/main/docs/assets/showcase.mp4)
+https://github.com/user-attachments/assets/bd319cb4-68e3-4b45-a48a-06bec8856cfe
 
-**[↓ 下载完整短片 · 1:20](https://github.com/medxiaorudan/VoiceFrame/raw/refs/heads/main/docs/assets/showcase.mp4)**
 
 ---
 
@@ -20,7 +19,7 @@
 
 Apple Silicon Mac · Windows · Linux
 
-</div>
+
 
 ---
 
