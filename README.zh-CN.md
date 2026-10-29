@@ -1,4 +1,4 @@
-# VoiceFrame
+# 🎙️ VoiceFrame
 
 **为你的视频配音，让每一句恰到好处。**
 
@@ -6,7 +6,7 @@
 
 本地运行的视频配音工作台。在浏览器中上传视频、选择声音、调整同步，再导出成片。
 
-### 一个世界，多种声音
+### 🌍 一个世界，多种声音
 
 ![短片动态预览](docs/assets/preview.gif)
 
@@ -19,9 +19,9 @@ https://github.com/user-attachments/assets/b641585d-c9bc-498d-a3b6-3b5df0efc027
 
 ---
 
-[**安装与启动**](docs/SETUP.zh-CN.md) · [**使用指南**](docs/USER_GUIDE.zh-CN.md)
+[**🚀 安装与启动**](docs/SETUP.zh-CN.md) · [**📖 使用指南**](docs/USER_GUIDE.zh-CN.md)
 
-Apple Silicon Mac · Windows · Linux
+💻 Apple Silicon Mac · Windows · Linux
 
 ---
 
