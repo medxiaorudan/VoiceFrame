@@ -53,7 +53,14 @@ def fit_audio(source, target, window, max_speed, check_cancel=lambda: None):
         return None, dict(original=duration, window=window, required_speed=speed)
     for _ in range(32):
         check_cancel()
-        run([executable('ffmpeg'), '-v', 'error', '-y', '-i', source, '-af', f'atempo={speed:.10f}',
+        # Keep each tempo stage at or below 2x for larger requested speed-ups.
+        remaining = speed
+        filters = []
+        while remaining > 2:
+            filters.append('atempo=2')
+            remaining /= 2
+        filters.append(f'atempo={remaining:.10f}')
+        run([executable('ffmpeg'), '-v', 'error', '-y', '-i', source, '-af', ','.join(filters),
              '-ar', '24000', '-ac', '1', '-c:a', 'pcm_s16le', target])
         audio, _ = sf.read(str(target), dtype='float32')
         if len(audio) <= frames:
@@ -70,3 +77,4 @@ def mux(video, audio, target, start, duration):
     run([executable('ffmpeg'), '-v', 'error', '-ss', str(start), '-i', video, '-i', audio,
          '-map', '0:v:0', '-map', '1:a:0', '-t', str(duration), '-c:v', 'libx264', '-preset', 'fast',
          '-crf', '20', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', target], 7200)
+

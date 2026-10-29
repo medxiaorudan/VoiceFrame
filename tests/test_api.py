@@ -77,3 +77,20 @@ def test_delete_guard(tmp_path):
         c.post(f"/api/jobs/{j['id']}/cancel")
         assert c.delete(f"/api/projects/{p['id']}").status_code==200
         assert c.get(f"/api/projects/{p['id']}").status_code==404
+
+
+
+def test_save_higher_speed_and_reject_out_of_range(tmp_path):
+    with TestClient(create_app(tmp_path, False)) as c:
+        p = project(c)
+        for speed in (2.5, 3.0):
+            body = {k: p[k] for k in ('revision', 'name', 'settings', 'cues')}
+            body['settings']['max_speed'] = speed
+            response = c.put(f"/api/projects/{p['id']}", json=body)
+            assert response.status_code == 200, response.text
+            p = response.json()
+            assert c.get(f"/api/projects/{p['id']}").json()['settings']['max_speed'] == speed
+        for speed in (0.9, 3.01):
+            body = {k: p[k] for k in ('revision', 'name', 'settings', 'cues')}
+            body['settings']['max_speed'] = speed
+            assert c.put(f"/api/projects/{p['id']}", json=body).status_code == 422

@@ -31,7 +31,7 @@ class Settings(BaseModel):
     reference_text: str = Field(default='', max_length=3000)
     seed: int = Field(default=42, ge=0, le=2147483647)
     offset: float = Field(default=0, ge=-60, le=60, allow_inf_nan=False)
-    max_speed: float = Field(default=1.15, ge=1, le=1.25, allow_inf_nan=False)
+    max_speed: float = Field(default=1.15, ge=1, le=3, allow_inf_nan=False)
     rules: list[Rule] = Field(default_factory=list, max_length=100)
 
 
@@ -55,7 +55,7 @@ class JobRequest(BaseModel):
     revision: int
     text: str = Field(default='我们先看一个简单的例子。理解了这一步，后面的计算就容易了。', min_length=1, max_length=500)
     start: float = Field(default=0, ge=0, allow_inf_nan=False)
-    duration: float = Field(default=30, ge=3, le=90, allow_inf_nan=False)
+    duration: float = Field(default=30, ge=3, le=7200, allow_inf_nan=False)
     stream_index: int = Field(default=0, ge=0, le=100)
     crop_top: float = Field(default=.75, ge=0, le=.95, allow_inf_nan=False)
     crop_bottom: float = Field(default=1, gt=0, le=1, allow_inf_nan=False)
@@ -79,3 +79,4 @@ def validate_cues(cues):
             raise ValueError('Duplicate cue ID.')
         previous = cue['end']
         ids.add(cue['id'])
+

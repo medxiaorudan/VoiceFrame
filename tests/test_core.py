@@ -62,3 +62,12 @@ def test_nonfinite_and_duplicate_validation():
     with pytest.raises(ValueError): Settings(offset=float('nan'))
     with pytest.raises(ValueError):
         ProjectEdit(revision=0,name='x',cues=[dict(id=1,start=0,end=1,text='x'),dict(id=1,start=2,end=3,text='y')])
+
+
+
+def test_preview_duration_bounds():
+    from app.models import JobRequest
+    assert JobRequest(kind='preview', revision=0, duration=7200).duration == 7200
+    for duration in (2, 7201, float('inf')):
+        with pytest.raises(ValueError):
+            JobRequest(kind='preview', revision=0, duration=duration)

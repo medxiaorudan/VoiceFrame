@@ -41,15 +41,15 @@ def test_real_ffmpeg_render_offset_cache_and_revision(tmp_path):
     subprocess.run(['ffmpeg','-v','error','-f','lavfi','-i','color=c=blue:s=320x180:r=25','-t','5','-c:v','libx264','-pix_fmt','yuv420p',str(source)],check=True)
     p=store.update(p['id'],0,dict(video=dict(file='source.mp4',**probe(source)),cues=[dict(id=1,start=.2,end=1.2,text='Hello',spoken_text=''),dict(id=2,start=2,end=3,text='World',spoken_text='单句读法')]))
     synth=TestSynth();worker=Worker(store,synth)
-    req=JobRequest(kind='preview',revision=p['revision'],duration=4).model_dump()
+    req=JobRequest(kind='preview',revision=p['revision'],duration=300).model_dump()
     j=store.enqueue(p,req);worker.process(j['id']);j=store.job(j['id'])
     assert j['status']=='completed',j['error']
     wav=tmp_path/p['id']/j['result']['audio']
     audio,rate=sf.read(str(wav))
-    assert len(audio)==4*rate
+    assert len(audio)==5*rate
     assert np.max(np.abs(audio[:round(.7*rate)]))==0
     assert np.max(np.abs(audio[round(.7*rate):rate]))>.1
-    assert abs(probe(tmp_path/p['id']/j['result']['video'])['duration']-4)<.1
+    assert abs(probe(tmp_path/p['id']/j['result']['video'])['duration']-5)<.1
     assert synth.calls==2
     assert synth.texts==['你好', '单句读法']
     p=store.approve(p['id'],j)
@@ -100,3 +100,14 @@ def test_dictionary_reaches_audition_engine_and_changed_reading_invalidates_cach
         worker.process(job['id'])
         assert store.job(job['id'])['status'] == 'completed'
     assert synth.texts == ['银航', '银航呀']
+
+
+def test_fit_audio_above_double_speed(tmp_path):
+    rate = 24000
+    source = tmp_path / 'long.wav'
+    sf.write(str(source), .2 * np.sin(2 * np.pi * 230 * np.arange(rate * 3) / rate), rate)
+    data, details = fit_audio(source, tmp_path / 'fast.wav', 1.2, 3)
+    assert data is not None
+    assert len(data) <= round(1.2 * rate)
+    assert 2.5 <= details['speed'] <= 3
+    assert sf.info(str(source)).frames == rate * 3
