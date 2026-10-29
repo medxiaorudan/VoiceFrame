@@ -7,6 +7,7 @@ import numpy as np
 import soundfile as sf
 from . import detection
 from .engines import Synthesizer, audio_key
+from .speech_process import SpeechProcess
 from .media import TimingError, fit_audio, mux
 from .models import Cue, validate_cues
 from .store import Conflict
@@ -20,7 +21,7 @@ class Cancelled(Exception):
 class Worker:
     def __init__(self, store, synthesizer=None):
         self.store = store
-        self.synth = synthesizer or Synthesizer()
+        self.synth = synthesizer or SpeechProcess(Synthesizer)
         self.stop = threading.Event()
         self.thread = None
 
@@ -30,10 +31,14 @@ class Worker:
         self.thread.start()
 
     def loop(self):
-        while not self.stop.wait(.5):
-            jid = self.store.next_job()
-            if jid:
-                self.process(jid)
+        try:
+            while not self.stop.wait(.5):
+                jid = self.store.next_job()
+                if jid:
+                    self.process(jid)
+        finally:
+            if isinstance(self.synth, SpeechProcess):
+                self.synth.close()
 
     def check(self, jid):
         if self.stop.is_set() or self.store.job(jid)['cancelled']:
@@ -70,6 +75,7 @@ class Worker:
                 result = dict(subtitles=f"jobs/{jid}/detected.srt", count=len(cues), review_required=True)
             elif j['kind'] == 'voice':
                 text = spoken_text(dict(text=request['text']), p['settings']['rules'])
+                progress(0, 'Loading model / generating voice; first use may download model files')
                 source = self.generate(p, text, 0, progress, check)
                 import shutil
                 shutil.copy2(source, folder/'voice.wav')
@@ -104,7 +110,14 @@ class Worker:
             except Exception:
                 pass
             target.unlink(missing_ok=True)
-        self.synth.synthesize(text, settings, self.store.root/p['id']/reference['file'] if reference else None, target, attempt)
+        args = (text, settings, self.store.root/p['id']/reference['file'] if reference else None, target, attempt)
+        try:
+            if isinstance(self.synth, SpeechProcess):
+                self.synth.synthesize(*args, check=check)
+            else:
+                self.synth.synthesize(*args)
+        finally:
+            target.with_suffix('.partial.wav').unlink(missing_ok=True)
         check()
         return target
 
@@ -170,3 +183,4 @@ class Worker:
         (folder/'alignment.json').write_text(json.dumps(dict(offset=offset, preview_start=start, cues=fitted), indent=2), encoding='utf-8')
         return dict(video=f"jobs/{j['id']}/dubbed.mp4", audio=f"jobs/{j['id']}/voiceover.wav",
                     subtitles=f"jobs/{j['id']}/subtitles.srt", start=start, duration=end-start)
+

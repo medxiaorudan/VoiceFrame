@@ -24,6 +24,7 @@ function localize() {
   document.querySelectorAll('[data-zh]').forEach(node => node.textContent = state.language === 'zh' ? node.dataset.zh : node.dataset.en);
   $('language').textContent = state.language === 'zh' ? 'EN' : '中文';
   $('new-name').placeholder = t('例如：子集个数 · 第一课', 'e.g. Subsets · Lesson one');
+  for (const id of ['instruction', 'rules']) $(id).placeholder = inputExample(id);
   renderSidebar();
   if(state.project) { renderStatus(); renderCues(); renderJobs(); detectionOptions(); }
 }
@@ -164,3 +165,29 @@ window.addEventListener('beforeunload',e=>{if(state.dirty){e.preventDefault();e.
 async function init() {localize();const session=await api('/api/session');if(!session.authenticated){$('login-dialog').showModal();return;}await listProjects();const last=localStorage.getItem('voiceframe.project');if(state.projects.some(p=>p.id===last))await openProject(last);renderStatus();}
 setInterval(()=>refreshJobs().catch(()=>{}),2000);
 init().catch(error=>toast(error.message,true));
+
+// Examples are editable text; unsupported control tags are never inserted.
+function inputExample(id) {
+  if (id === 'rules') return t('银行 => 银航\n重新 => 虫新\n2^n => 二的恩次幂', 'VoiceFrame => Voice Frame\n2^n => two to the power of n');
+  if (id === 'instruction') return t('用自然的普通话讲解。短语内部连贯朗读，逗号处稍作停顿，句号处停顿更明显，在完整句子之间自然换气。', 'Explain naturally. Link words smoothly within phrases, pause briefly at commas and more fully at sentence endings, and breathe naturally between complete sentences.');
+  return '';
+}
+function completeExample(field, force = false) {
+  const example = inputExample(field.id);
+  if (!example || field.disabled || field.readOnly) return false;
+  const value = field.value;
+  if (!force && value && (!example.startsWith(value) || value === example || field.selectionStart !== value.length || field.selectionEnd !== value.length)) return false;
+  if (force && value && !example.startsWith(value) && !confirm(t('用示例替换当前内容？', 'Replace this field with the example?'))) return false;
+  field.value = example;
+  field.focus();
+  field.setSelectionRange(force ? 0 : value.length, example.length);
+  field.dispatchEvent(new Event('input', {bubbles: true}));
+  return true;
+}
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Tab' || e.shiftKey || e.ctrlKey || e.altKey || e.metaKey || e.isComposing) return;
+  if (['rules', 'instruction'].includes(e.target.id) && completeExample(e.target)) e.preventDefault();
+});
+document.querySelectorAll('[data-fill-example]').forEach(button => {
+  button.onclick = () => completeExample($(button.dataset.fillExample), true);
+});
