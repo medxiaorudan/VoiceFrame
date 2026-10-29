@@ -10,9 +10,9 @@ A local video dubbing studio. Upload a video, choose a voice, adjust the timing,
 
 ### One World, Many Voices
 
-[![Watch One World, Many Voices](docs/assets/preview.gif)](docs/assets/showcase.mp4)
+[![Watch One World, Many Voices](docs/assets/preview.gif)](https://github.com/medxiaorudan/VoiceFrame/raw/refs/heads/main/docs/assets/showcase.mp4)
 
-**[▶ Watch the full film · 1:20](docs/assets/showcase.mp4)**
+**[↓ Download the full film · 1:20](https://github.com/medxiaorudan/VoiceFrame/raw/refs/heads/main/docs/assets/showcase.mp4)**
 
 ---
 
