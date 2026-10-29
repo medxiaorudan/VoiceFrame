@@ -1,5 +1,3 @@
-
-
 # VoiceFrame
 
 **为你的视频配音，让每一句恰到好处。**
@@ -10,16 +8,20 @@
 
 ### 一个世界，多种声音
 
-https://github.com/user-attachments/assets/bd319cb4-68e3-4b45-a48a-06bec8856cfe
+![短片动态预览](docs/assets/preview.gif)
 
+<details>
+<summary>▶ 播放完整短片（含声音）· 1:20</summary>
+
+https://github.com/user-attachments/assets/b641585d-c9bc-498d-a3b6-3b5df0efc027
+
+</details>
 
 ---
 
 [**安装与启动**](docs/SETUP.zh-CN.md) · [**使用指南**](docs/USER_GUIDE.zh-CN.md)
 
 Apple Silicon Mac · Windows · Linux
-
-
 
 ---
 
