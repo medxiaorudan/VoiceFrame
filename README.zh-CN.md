@@ -11,7 +11,7 @@
 ![短片动态预览](docs/assets/preview.gif)
 
 <details>
-<summary>▶ 播放完整短片（含声音）· 1:20</summary>
+<summary>▶️ 🔊 播放完整短片（含声音）· 1:20</summary>
 
 https://github.com/user-attachments/assets/b641585d-c9bc-498d-a3b6-3b5df0efc027
 
