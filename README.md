@@ -1,5 +1,3 @@
-
-
 # VoiceFrame
 
 **Your video. Your voice. Right on cue.**
@@ -10,18 +8,20 @@ A local video dubbing studio. Upload a video, choose a voice, adjust the timing,
 
 ### One World, Many Voices
 
-https://github.com/user-attachments/assets/bd319cb4-68e3-4b45-a48a-06bec8856cfe
+![Animated film preview](docs/assets/preview.gif)
 
+<details>
+<summary>▶ Play the full film with sound · 1:20</summary>
 
+https://github.com/user-attachments/assets/b641585d-c9bc-498d-a3b6-3b5df0efc027
 
+</details>
 
 ---
 
 [**Get started**](docs/SETUP.md) · [**User guide**](docs/USER_GUIDE.md)
 
 Apple Silicon Mac · Windows · Linux
-
-
 
 ---
 
