@@ -2,6 +2,7 @@ import json
 import sqlite3
 import time
 import uuid
+from contextlib import contextmanager
 from pathlib import Path
 
 
@@ -22,8 +23,15 @@ class Store:
                     status TEXT NOT NULL, body TEXT NOT NULL, created REAL NOT NULL);
             ''')
 
+    @contextmanager
     def connect(self):
-        return sqlite3.connect(self.db, timeout=30)
+        db = sqlite3.connect(self.db, timeout=30)
+        try:
+            # The SQLite context manager commits/rolls back, but does not close.
+            with db:
+                yield db
+        finally:
+            db.close()
 
     def project(self, pid):
         with self.connect() as db:
@@ -125,3 +133,4 @@ class Store:
             ids = [r[0] for r in db.execute("SELECT id FROM jobs WHERE status='running'")]
         for jid in ids:
             self.patch_job(jid, status='interrupted', error='Server restarted. Retry to reuse completed audio.')
+
