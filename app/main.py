@@ -33,6 +33,12 @@ class Login(BaseModel):
 
 class Approval(BaseModel):
     job_id: str
+    revision: int | None = None
+    restore: bool = False
+
+
+class Favorite(BaseModel):
+    favorite: bool
 
 
 def create_app(data_dir=None, worker_enabled=True):
@@ -262,6 +268,28 @@ def create_app(data_dir=None, worker_enabled=True):
         store.project(pid)
         return [{k:v for k,v in j.items() if k not in ('snapshot',)} for j in store.jobs(pid)]
 
+    @app.patch('/api/jobs/{jid}/favorite')
+    def favorite(jid: str, body: Favorite):
+        store.patch_job(jid, favorite=body.favorite)
+        return dict(ok=True)
+
+    def remove_job_files(pid, ids):
+        base = (root / pid / 'jobs').resolve()
+        for jid in ids:
+            folder = (base / jid).resolve()
+            if folder.is_relative_to(base) and folder != base:
+                shutil.rmtree(folder, ignore_errors=True)
+        return dict(deleted=ids)
+
+    @app.delete('/api/jobs/{jid}')
+    def delete_job(jid: str):
+        j = store.job(jid)
+        return remove_job_files(j['project_id'], store.delete_jobs(j['project_id'], jid))
+
+    @app.delete('/api/projects/{pid}/jobs/history')
+    def clear_history(pid: str):
+        return remove_job_files(pid, store.delete_jobs(pid))
+
     @app.post('/api/jobs/{jid}/cancel')
     def cancel(jid: str):
         j = store.job(jid)
@@ -285,7 +313,7 @@ def create_app(data_dir=None, worker_enabled=True):
 
     @app.post('/api/projects/{pid}/approve')
     def approve(pid: str, body: Approval):
-        return store.approve(pid, store.job(body.job_id))
+        return store.approve(pid, store.job(body.job_id), body.revision, body.restore)
 
     @app.get('/media/{pid}/{path:path}')
     def media(pid: str, path: str):
@@ -302,3 +330,4 @@ def create_app(data_dir=None, worker_enabled=True):
 
 
 app = create_app(worker_enabled=os.getenv('VOICEFRAME_NO_WORKER') != '1')
+

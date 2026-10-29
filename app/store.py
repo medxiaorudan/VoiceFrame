@@ -73,19 +73,33 @@ class Store:
             p.update(fields)
             p['revision'] += 1
             p['approved_revision'] = None
+            p['approved_job_id'] = None
             db.execute('UPDATE projects SET body=? WHERE id=?', (json.dumps(p), pid))
         return p
 
-    def approve(self, pid, job):
+    def approve(self, pid, job, revision=None, restore=False):
         with self.connect() as db:
             db.execute('BEGIN IMMEDIATE')
             row = db.execute('SELECT body FROM projects WHERE id=?', (pid,)).fetchone()
             if not row:
                 raise KeyError('Project not found.')
             p = json.loads(row[0])
-            if job['project_id'] != pid or job['kind'] != 'preview' or job['status'] != 'completed' or job['snapshot']['revision'] != p['revision']:
+            row = db.execute('SELECT body FROM jobs WHERE id=?', (job['id'],)).fetchone()
+            if not row:
+                raise KeyError('Job not found.')
+            job = json.loads(row[0])
+            if revision is not None and p['revision'] != revision:
+                raise Conflict('Project changed. Reload before approving.')
+            if db.execute("SELECT 1 FROM jobs WHERE project_id=? AND status IN ('queued','running')", (pid,)).fetchone():
+                raise Conflict('Wait for active jobs or cancel them before approving.')
+            if job['project_id'] != pid or job['kind'] != 'preview' or job['status'] != 'completed' or (job['snapshot']['revision'] != p['revision'] and not restore):
                 raise Conflict('Approve a completed preview of the current project revision.')
+            if job['snapshot']['revision'] != p['revision']:
+                for field in ('settings', 'cues', 'video', 'reference'):
+                    p[field] = job['snapshot'].get(field)
+                p['revision'] += 1
             p['approved_revision'] = p['revision']
+            p['approved_job_id'] = job['id']
             db.execute('UPDATE projects SET body=? WHERE id=?', (json.dumps(p), pid))
         return p
 
@@ -110,7 +124,7 @@ class Store:
 
     def jobs(self, pid):
         with self.connect() as db:
-            return [json.loads(r[0]) for r in db.execute('SELECT body FROM jobs WHERE project_id=? ORDER BY created DESC LIMIT 30', (pid,))]
+            return [json.loads(r[0]) for r in db.execute('SELECT body FROM jobs WHERE project_id=? ORDER BY created DESC', (pid,))]
 
     def patch_job(self, jid, **fields):
         with self.connect() as db:
@@ -134,3 +148,27 @@ class Store:
         for jid in ids:
             self.patch_job(jid, status='interrupted', error='Server restarted. Retry to reuse completed audio.')
 
+
+    def delete_jobs(self, pid, jid=None):
+        """Delete terminal, unstarred history; preserve active and approved versions."""
+        with self.connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            row = db.execute('SELECT body FROM projects WHERE id=?', (pid,)).fetchone()
+            if not row:
+                raise KeyError('Project not found.')
+            project = json.loads(row[0])
+            jobs = [json.loads(r[0]) for r in db.execute('SELECT body FROM jobs WHERE project_id=?', (pid,))]
+            if jid is not None:
+                jobs = [j for j in jobs if j['id'] == jid]
+                if not jobs:
+                    raise KeyError('Job not found.')
+            removed = []
+            for job in jobs:
+                protected = job['status'] in ('queued', 'running') or job.get('favorite') or project.get('approved_job_id') == job['id']
+                if protected:
+                    if jid is not None:
+                        raise Conflict('Active, favorite and approved versions are protected. Cancel or unfavorite first; approve another version to replace an approved one.')
+                    continue
+                db.execute('DELETE FROM jobs WHERE id=?', (job['id'],))
+                removed.append(job['id'])
+        return removed
