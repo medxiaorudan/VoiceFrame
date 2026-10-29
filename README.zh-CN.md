@@ -10,9 +10,9 @@
 
 ### 一个世界，多种声音
 
-[![观看：一个世界，多种声音](docs/assets/preview.gif)](docs/assets/showcase.mp4)
+[![观看：一个世界，多种声音](docs/assets/preview.gif)](https://github.com/medxiaorudan/VoiceFrame/raw/refs/heads/main/docs/assets/showcase.mp4)
 
-**[▶ 观看完整短片 · 1:20](docs/assets/showcase.mp4)**
+**[↓ 下载完整短片 · 1:20](https://github.com/medxiaorudan/VoiceFrame/raw/refs/heads/main/docs/assets/showcase.mp4)**
 
 ---
 
